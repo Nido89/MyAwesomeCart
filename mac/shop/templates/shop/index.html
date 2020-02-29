@@ -48,6 +48,16 @@ max-width: 285px;
       padding-left: 0,
       padding-right: 0;
       }
+.btn-outline-success {
+    color: #ad3;
+    border-color: #fea;
+}
+.btn-secondary {
+    color: #343a40;
+    background-color: #ad2;
+    border-color: #6c757d;
+}
+
 
 
 {% endblock %}
@@ -145,6 +155,8 @@ max-width: 285px;
     localStorage.setItem('cart',JSON.stringify(cart));
     document.getElementById('cart').innerHTML = Object.keys(cart).length;
     });
+    $('#cartpopover').popover();
+    document.getElementById("cartpopover").setAttribute('data-content','<h6>Cart full of items of your shopping</h6>');
 
 </script>
 
