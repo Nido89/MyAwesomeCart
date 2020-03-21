@@ -1,4 +1,113 @@
 {% extends 'shop/basic.html' %}
 
-{% block title %}CheckOut{% endblock %}
-{% block body %} This is Checkout Page{% endblock %}
+{% block title %}
+Checkout Page
+{% endblock %}
+{% block body %} 
+
+<div class="container">
+	<div class="col my-5">
+	<h2>Step 1 - My awesome shop's express Checkout - Review your cart Items</h2>
+	<div class="my-4">
+		<!-- Targetting UL elements with id=items -->
+<ul class="list-group" id="items">
+
+</ul>
+		
+	</div>
+
+</div>
+<div class="col my-5"> 
+<h2>Step 2 Enter your details and Address:</h2>
+<form method="post" action="/shop/checkout/"> {% csrf_token %}
+  <input type="hidden" name="itemsJson" id="itemsJson">
+  <div class="form-row">
+  	<div class="form-group col-md-6">
+      <label for="inputname">Name</label>
+      <input type="text" class="form-control" id="name" name="name" required="required" placeholder="Your Full Name">
+    </div>
+    <div class="form-group col-md-6">
+      <label for="inputEmail4">Email</label>
+      <input type="email" class="form-control" id="email" name="email" required="required" placeholder="Your valid Email">
+    </div>
+  </div>
+  <div class="form-group">
+    <label for="inputAddress">Address</label>
+    <input type="text" class="form-control" id="address1" name="address1" required="required" placeholder="1234 Main St">
+  </div>
+  <div class="form-group">
+    <label for="inputAddress2">Address Line 2</label>
+    <input type="text" class="form-control" id="address2" name="address2" placeholder="Apartment, studio, or floor">
+  </div>
+  <div class="form-row">
+    <div class="form-group col-md-3">
+      <label for="inputCity">City</label>
+      <input type="text" class="form-control" id="city" name="city" required="required" placeholder="Kerava">
+    </div>
+    <div class="form-group col-md-3">
+      <label for="inputState">Province</label>
+    <input type="text" class="form-control" id="state" name="state" required="required" placeholder="Enter Province or State">
+  </div>
+    <div class="form-group col-md-2">
+      <label for="inputZip">Postal code </label>
+      <input type="text" class="form-control" id="zip_code" name="zip_code" required="required" placeholder="07000">
+    </div>
+    <div class="form-group">
+      <label for="inputtel">Phone</label>
+      <input type="tel" class="form-control" id="phone" name="phone" required="required" placeholder="+358-12345678">
+    </div>
+  </div>
+  <div class="form-group">
+    <div class="form-check">
+      <input class="form-check-input" type="checkbox" id="gridCheck">
+      <label class="form-check-label" for="gridCheck" >
+        Please check and confirm all information is correct and you read our<a href="#"> Terms & conditions.</a>.
+      </label>
+    </div>
+  </div>
+  <button type="submit" class="btn btn-primary">Ship Order</button>
+</form>
+</div>
+</div>
+{{{% endblock %}
+ {% block js %} 
+ <script>
+ 	// Find out the cart items from localStorage now bring cart on checkout page from localstorage
+ if (localStorage.getItem('cart') == null) {
+     var cart = {};
+ } else {
+     cart = JSON.parse(localStorage.getItem('cart'));
+  }
+  var sum = 0;
+ console.log(cart);
+ // to check if cart object is not empty
+ if ($.isEmptyObject(cart)){
+ 	//When object is empty
+ 		mystr = `<p>Your cart is empty, Please add some items to your cart so you can checkout.</p>`
+   //Handling the mystr string
+   $('#items').append(mystr);
+ }
+ else{
+ for (item in cart){
+ 
+ 	let name = cart[item][1]; 
+ 	let qty = cart[item][0]; 
+ 	sum = sum + qty;
+ 	mystr = `<li class="list-group-item d-flex justify-content-between align-items-center">
+     ${name}
+     <span class="badge badge-primary badge-pill">${qty}</span>
+   </li>`
+   //Handling the mystr string
+   $('#items').append(mystr);
+ }
+ }
+ document.getElementById('cart').innerHTML = sum;
+ $('#itemsJson').val(JSON.stringify(cart));
+ {% if thank %}
+alert('Thanks for ordering with us.Your Shipment id is {{id}} . Use this id to track your order using our Tracker system.');
+localStorage.clear();
+//Redirecting user after shiporder placed
+document.location = "/shop";
+{% endif %}
+</script>
+{% endblock %}
