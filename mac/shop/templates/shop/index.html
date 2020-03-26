@@ -55,6 +55,7 @@ padding-right: 0;
                             <img src='/media/{{i.image}}' class="card-img-top" alt="...">
                             <div class="card-body">
                                 <h5 class="card-title" id="namepr{{i.id}}">{{i.product_name}}</h5>
+                                <h6 class="card-title" id="price{{i.id}}">{{i.price}}Euro</h6>
                                 <p class="card-text">{{i.desc|slice:"0:53"}}...</p>
                                 <span id="divpr{{i.id}}" class="divpr">
                                     <button id="pr{{i.id}}" class="btn btn-primary cart">Add To Cart</button>
@@ -100,6 +101,9 @@ if (localStorage.getItem('cart') == null) {
     } else {
       qty = 1;
       name = document.getElementById('name'+idstr).innerHTML;
+      
+      
+
         cart[idstr] = [qty,name];
     }
     updateCart(cart);
@@ -136,7 +140,7 @@ function clearCart() {
     cart = {};
     updateCart(cart);
 }
-
+//Making the cart
 function updateCart(cart) {
     var sum = 0;
     for (var item in cart) {
@@ -144,6 +148,7 @@ function updateCart(cart) {
         document.getElementById('div' + item).innerHTML = "<button id='minus" + item + "' class='btn btn-primary minus'>-</button> <span id='val" + item + "''>" + cart[item][0] + "</span> <button id='plus" + item + "' class='btn btn-primary plus'> + </button>";
     }
     localStorage.setItem('cart', JSON.stringify(cart));
+    //Cart(0) to Cart's Quantity(10) has been changed
     document.getElementById('cart').innerHTML = sum;
     //console.log(cart);
     updatePopover(cart);

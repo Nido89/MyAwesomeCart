@@ -69,44 +69,51 @@ Checkout Page
 </form>
 </div>
 </div>
-{{{% endblock %}
+{% endblock %}
  {% block js %} 
  <script>
- 	// Find out the cart items from localStorage now bring cart on checkout page from localstorage
- if (localStorage.getItem('cart') == null) {
-     var cart = {};
- } else {
-     cart = JSON.parse(localStorage.getItem('cart'));
-  }
-  var sum = 0;
- console.log(cart);
- // to check if cart object is not empty
- if ($.isEmptyObject(cart)){
- 	//When object is empty
- 		mystr = `<p>Your cart is empty, Please add some items to your cart so you can checkout.</p>`
-   //Handling the mystr string
-   $('#items').append(mystr);
- }
- else{
- for (item in cart){
- 
- 	let name = cart[item][1]; 
- 	let qty = cart[item][0]; 
- 	sum = sum + qty;
- 	mystr = `<li class="list-group-item d-flex justify-content-between align-items-center">
-     ${name}
-     <span class="badge badge-primary badge-pill">${qty}</span>
-   </li>`
-   //Handling the mystr string
-   $('#items').append(mystr);
- }
- }
- document.getElementById('cart').innerHTML = sum;
- $('#itemsJson').val(JSON.stringify(cart));
- {% if thank %}
-alert('Thanks for ordering with us.Your Shipment id is {{id}} . Use this id to track your order using our Tracker system.');
+if (localStorage.getItem('cart') == null) {
+    var cart = {};
+} else {
+    cart = JSON.parse(localStorage.getItem('cart'));
+}
+
+var sum = 0;
+var total_bill = 0
+if ($.isEmptyObject(cart)) {
+    //if object is empty
+    mystr = `<p>Your cart is empty, please add some items to your cart before checking out!</p>`
+    $('#items').append(mystr);
+} else {
+
+    for (item in cart) {
+        let name = cart[item][1];
+        let qty = cart[item][0];
+        let price =cart[item][2] * qty;
+        console.log([item][2]);
+        total_bill += price
+        sum = sum + qty;
+        mystr = `<li class="list-group-item d-flex justify-content-between align-items-center">
+                    ${name}
+                    <span class="badge badge-primary">${qty} Item - Rs.${price}</span>
+
+                </li>`
+        $('#items').append(mystr);
+    }
+
+
+    total = `<div class="alert alert-success" role="alert"><li class="list-group-item d-flex justify-content-between align-items-center">
+                    <h3>Total Bill</h3>
+                    <h3>  Rs.${total_bill}  </h3>
+
+                </li></div>`
+    $('#items').append(total);
+}
+document.getElementById('cart').innerHTML = sum;
+$('#itemsJson').val(JSON.stringify(cart));
+{% if thank %}
+alert('Thanks for ordering with us. Your order is is {{id}}. Use it to track your order using our order tracker');
 localStorage.clear();
-//Redirecting user after shiporder placed
 document.location = "/shop";
 {% endif %}
 </script>
