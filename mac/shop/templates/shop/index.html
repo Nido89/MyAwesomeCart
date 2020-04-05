@@ -6,21 +6,25 @@ display: inline-block;
 margin-left:-4px;
 }
 .carousel-indicators .active {
-background-color: blue;
+background-color: orange;
 }
 .col-md-3 img{
 width: 170px;
 height: 200px;
 }
-body .carousel-indicator li{
+body .carousel-indicator li {
 background-color: blue;
+
+}
+body .carousel-indicators li {
+background-color: green;
 }
 body .carousel-indicators{
-bottom: 0;
+bottom: -41px;
 }
 body .carousel-control-prev-icon,
 body .carousel-control-next-icon{
-background-color: blue;
+background-color: red;
 }
 .carousel-control-prev,
 .carousel-control-next{
@@ -55,7 +59,7 @@ padding-right: 0;
                             <img src='/media/{{i.image}}' class="card-img-top" alt="...">
                             <div class="card-body">
                                 <h5 class="card-title" id="namepr{{i.id}}">{{i.product_name}}</h5>
-                                <h6 class="card-title" id="price{{i.id}}">{{i.price}}Euro</h6>
+                                <h6 class="card-title"><span id="pricepr{{i.id}}">{{i.price}}</span> Euros</h6>
                                 <p class="card-text">{{i.desc|slice:"0:53"}}...</p>
                                 <span id="divpr{{i.id}}" class="divpr">
                                     <button id="pr{{i.id}}" class="btn btn-primary cart">Add To Cart</button>
@@ -91,6 +95,7 @@ if (localStorage.getItem('cart') == null) {
 } else {
     cart = JSON.parse(localStorage.getItem('cart'));
     updateCart(cart);
+
 }
 // If the add to cart button is clicked, add/increment the item
 //$('.cart').click(function() {
@@ -100,13 +105,17 @@ if (localStorage.getItem('cart') == null) {
       qty = cart[idstr][0] + 1;
     } else {
       qty = 1;
+    
       name = document.getElementById('name'+idstr).innerHTML;
+      price = document.getElementById('price'+idstr).innerHTML;
+      
       
       
 
-        cart[idstr] = [qty,name];
+        cart[idstr] = [qty,name,parseInt(price)];
     }
     updateCart(cart);
+    console.log(cart);
 });
 //Add Popover to cart
 $('#popcart').popover();
@@ -123,7 +132,7 @@ function updatePopover(cart) {
     }
     //Add to cart buttons with clear cart button and checkout pagebutton
    popStr = popStr + "</div> <a href='/shop/checkout'><button class='btn btn-primary' id ='checkout'>Checkout</button></a> <button class='btn btn-primary' onclick='clearCart()' id ='clearCart'>Clear Cart</button>     "
-    console.log(popStr);
+    //console.log(popStr);
     document.getElementById('popcart').setAttribute('data-content', popStr);
     $('#popcart').popover('show')
       var myDefaultWhiteList = $.fn.tooltip.Constructor.Default.whiteList 
@@ -158,7 +167,14 @@ $('.divpr').on("click", "button.minus", function() {
     a = this.id.slice(7, );
     cart['pr' + a][0] = cart['pr' + a][0] - 1;
     cart['pr' + a][0] = Math.max(0, cart['pr' + a][0]);
-    document.getElementById('valpr' + a).innerHTML = cart['pr' + a][0];
+    if (cart['pr' +a][0]==0){
+        document.getElementById('divpr'+a).innerHTML= '<buuton id="pr'+a+'" class="btn btn-primary cart">Add to Cart</button>'
+         delete cart['pr'+a];
+    }
+    else {
+        document.getElementById('valpr' + a).innerHTML = cart['pr' + a][0];
+    }
+    
     updateCart(cart);
 });
 $('.divpr').on("click", "button.plus", function() {

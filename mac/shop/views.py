@@ -28,6 +28,7 @@ def about(request):
 
 
 def contact(request):
+    thank = False
     if request.method== "POST":
         #print(request)
         name = request.POST.get('name','')
@@ -37,9 +38,10 @@ def contact(request):
         desc = request.POST.get('desc','')
         #print(name,email,phone,desc)
         contact = Contact(name=name,email=email,phone=phone,desc=desc)
-        thank = True
+
 
         contact.save()
+        thank = True
 
 
 
