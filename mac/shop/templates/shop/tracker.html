@@ -1,116 +1,97 @@
 {% extends 'shop/basic.html' %}
-
 {% block title %}
-Shop's Track Page
+	Shop's Track Page
 {% endblock %}
-{% block body %} 
-
-<div class="container">
-	<div class="col my-5">
-	<h2>Enter your Order ID Number and email to track your Orders.</h2>
-
-	<form method="post" action="#" id="trackerForm"> {% csrf_token %}
-  <div class="form-row">
-  	<div class="form-group col-md-6">
-      <label for="inputname">Order ID</label>
-      <input type="text" class="form-control" id="orderId" name="orderId" required="required" placeholder="Order ID">
-    </div>
-    <div class="form-group col-md-6">
-      <label for="inputEmail4">Email</label>
-      <input type="email" class="form-control" id="email" name="email" required="required" placeholder="Your valid Email">
-    </div>
-    <button type="submit" class="btn btn-primary">Track Order</button>
-  </div>
-
-
-</div>
-<div class="col my-5"> 
-<h2>Your Order's Current Tracking Status</h2>
-	<div class="my-4">
-		<!-- Targetting UL elements with id=items -->
-<ul class="list-group" id="items">
-	Enter your Order's correct ID above and email that you used to place shipment correctly to find all shipment details about its logistics.
-
-</ul>
+{% block body %}
+	<div class="container">
+		<div class="col my-5">
+			<h2>Enter your Order ID Number and email to track your Orders.</h2>
+			<form method="post" action="#" id="trackerForm"> {% csrf_token %}
+				<div class="form-row">
+					<div class="form-group col-md-6">
+						<label for="inputname">Order ID</label>
+						<input type="text" class="form-control" id="orderId" name="orderId" required="required" placeholder="Order ID">
+					</div>
+					<div class="form-group col-md-6">
+						<label for="inputEmail4">Email</label>
+						<input type="email" class="form-control" id="email" name="email" required="required" placeholder="Your valid Email">
+					</div>
+					<button type="submit" class="btn btn-primary">Track Order</button>
+				</div>
+			</div>
+			<div class="col my-5">
+				<h2>Your Order's Current Tracking Status</h2>
+				<div class="my-4">
+					<!-- Targetting UL elements with id=items -->
+					<ul class="list-group" id="items">
+						Enter your Order's correct ID above and email that you used to place shipment correctly to find all shipment details about its logistics.
+					</ul>
+					
+				</div>
+				<h2>Your Order's Basic Details</h2>
+				<div class="my-4">
+					<!-- Targetting UL elements with id=items -->
+					<ul class="list-group" id="citems">
+					</ul>
+					
+				</div>
+			</div>
+		</div>
+	{% endblock %}
+	{% block js %}
+		<script>
+		$('#trackerForm').submit(function(event){
+			$('#items').empty();
+			var formData = {
+				'orderId' :$('input[name=orderId]').val(),
+				'email':$('input[name=email]').val(),
+				'csrfmiddlewaretoken':$('input[name=csrfmiddlewaretoken]').val(),
+			};
+			$.ajax({
+				type:'POST',
+				url: '/shop/tracker/',
+				data: formData,
+				encode: true
+			})
+			.done(function(data){
+				$('#citems').empty();
+				console.log(data)
+				data= JSON.parse(data);
+				
+				if (data['status'] == 'success'){
+					updates = data['updates'];
+				
+			for (i=0;i<updates.length;i++){
 		
-	</div>
-<h2>Your Order's Basic Details</h2>
-	<div class="my-4">
-		<!-- Targetting UL elements with id=items -->
-<ul class="list-group" id="citems">
-</ul>
-		
-	</div>
-
-</div>
-</div>
-{% endblock %}
- {% block js %} 
- <script>
-$('#trackerForm').submit(function(event){
-	$('#items').empty();
-
-	var formData = {
-		'orderId' :$('input[name=orderId]').val(),
-		'email':$('input[name=email]').val(),
-		'csrfmiddlewaretoken':$('input[name=csrfmiddlewaretoken]').val(),
-	};
-
-	$.ajax({
-		type:'POST',
-		url: '/shop/tracker/',
-		data: formData,
-		encode: true
-	})
-	.done(function(data){
-		console.log(data)
-		data= JSON.parse(data);
-		updates = data[0];
-		if (updates.length>0 & updates !={}){
-
-
-		
-	for (i=0;i<updates.length;i++){
- 
-	 	let text = updates[i]['text']; 
-	 	let time = updates[i]['time']; 
-	 	mystr = `<li class="list-group-item d-flex justify-content-between align-items-center">
-	     ${text}
-	     <span class="badge badge-primary badge-pill">${time}</span>
-	   </li>`
-	   //Handling the mystr string
-	   $('#items').append(mystr);
-
- 	}
- }
- else{
- 	mystr = `<li class="list-group-item d-flex justify-content-between align-items-center">
-	     Sorry something is wrong. Please double check if you typed everything correctly.Check email and all spellings plus exact order id Number.</li>`
- 	$('#items').append(mystr);
-
- }
-
-// Filling the details of the order
-cart = JSON.parse(data[1]);
-console.log(cart);
-for (item in cart) {
-        let name = cart[item][1];
-        let qty = cart[item][0];
-        mystr = `<li class="list-group-item d-flex justify-content-between align-items-center">
-                    ${name}
-                    <span class="badge badge-primary">${qty}</span>
-
-                </li>`
-        $('#citems').append(mystr);
-    }
-
-	});
-	event.preventDefault();
-
-
-
-
-});
- </script>
-
-{% endblock %}
+				let text = updates[i]['text'];
+				let time = updates[i]['time'];
+				mystr = `<li class="list-group-item d-flex justify-content-between align-items-center">
+				${text}
+				<span class="badge badge-primary badge-pill">${time}</span>
+			</li>`
+			//Handling the mystr string
+			$('#items').append(mystr);
+			}
+			// Filling the details of the order
+		cart = JSON.parse(data['itemsJson']);
+		console.log(cart);
+		for (item in cart) {
+		let name = cart[item][1];
+		let qty = cart[item][0];
+		mystr = `<li class="list-group-item d-flex justify-content-between align-items-center">
+			${name}
+			<span class="badge badge-primary">${qty}</span>
+		</li>`
+		$('#citems').append(mystr);
+		}
+		}else{
+			mystr = `<li class="list-group-item d-flex justify-content-between align-items-center">
+			Sorry something is wrong. Please double check if you typed everything correctly.Check email and all spellings plus exact order id Number.</li>`
+			$('#items').append(mystr);
+			$('#citems').append(mystr);
+		}
+			});
+			event.preventDefault();
+		});
+		</script>
+	{% endblock %}
